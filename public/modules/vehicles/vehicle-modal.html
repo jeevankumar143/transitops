@@ -1,0 +1,62 @@
+<!-- Vehicle modal -->
+<div class="modal-overlay" id="vehicle-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="vehicle-modal-title">Add Vehicle</div>
+      <button class="modal-close" onclick="closeModal('vehicle-modal')">✕</button>
+    </div>
+    <form id="vehicle-form" onsubmit="vehicleFormSubmit(event)">
+      <input type="hidden" id="v-id" />
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Registration No *</label>
+          <input type="text" id="v-reg" placeholder="KAA 123A" required />
+        </div>
+        <div class="form-group">
+          <label>Vehicle Name *</label>
+          <input type="text" id="v-name" placeholder="Atlas Prime" required />
+        </div>
+        <div class="form-group">
+          <label>Model *</label>
+          <input type="text" id="v-model" placeholder="Volvo FH16" required />
+        </div>
+        <div class="form-group">
+          <label>Type *</label>
+          <select id="v-type" required>
+            <option value="">Select type</option>
+            <option>Truck</option><option>Van</option><option>Bus</option>
+            <option>Pickup</option><option>Tanker</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Max Load Capacity (kg)</label>
+          <input type="number" id="v-capacity" min="0" step="100" placeholder="20000" />
+        </div>
+        <div class="form-group">
+          <label>Odometer (km)</label>
+          <input type="number" id="v-odometer" min="0" step="0.1" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label>Acquisition Cost</label>
+          <input type="number" id="v-cost" min="0" step="1000" placeholder="8500000" />
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="v-status">
+            <option value="Available">Available</option>
+            <option value="In Shop">In Shop</option>
+            <option value="Retired">Retired</option>
+          </select>
+        </div>
+        <div class="form-group col-2">
+          <label>Region</label>
+          <input type="text" id="v-region" placeholder="Nairobi" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('vehicle-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="vehicle-submit-btn">Save Vehicle</button>
+      </div>
+    </form>
+  </div>
+</div>

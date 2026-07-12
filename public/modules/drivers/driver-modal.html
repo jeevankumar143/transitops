@@ -1,0 +1,54 @@
+<!-- Driver modal -->
+<div class="modal-overlay" id="driver-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="driver-modal-title">Add Driver</div>
+      <button class="modal-close" onclick="closeModal('driver-modal')">✕</button>
+    </div>
+    <form id="driver-form" onsubmit="driverFormSubmit(event)">
+      <input type="hidden" id="d-id" />
+      <div class="form-grid">
+        <div class="form-group col-2">
+          <label>Full Name *</label>
+          <input type="text" id="d-name" placeholder="John Doe" required />
+        </div>
+        <div class="form-group">
+          <label>License No *</label>
+          <input type="text" id="d-license" placeholder="DL-2021-001" required />
+        </div>
+        <div class="form-group">
+          <label>License Category *</label>
+          <select id="d-category" required>
+            <option value="">Select</option>
+            <option>A</option><option>B</option><option>C</option><option>D</option>
+            <option>E</option><option>Heavy</option><option>PSV</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>License Expiry *</label>
+          <input type="date" id="d-expiry" required />
+        </div>
+        <div class="form-group">
+          <label>Contact Number *</label>
+          <input type="text" id="d-contact" placeholder="+254700123456" required />
+        </div>
+        <div class="form-group">
+          <label>Safety Score (0–100)</label>
+          <input type="number" id="d-score" min="0" max="100" step="0.1" placeholder="100" />
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="d-status">
+            <option value="Available">Available</option>
+            <option value="Off Duty">Off Duty</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('driver-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="driver-submit-btn">Save Driver</button>
+      </div>
+    </form>
+  </div>
+</div>
