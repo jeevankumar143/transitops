@@ -31,6 +31,70 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* --- Loading overlay --- */
+    #to-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: var(--gov-navy-dark);
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #to-loader.to-loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .to-loader-crest {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid var(--gov-gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      animation: to-pulse 1.2s ease-in-out infinite;
+    }
+    .to-loader-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+    .to-loader-track {
+      width: 200px;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .to-loader-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gov-gold), var(--gov-gold-light));
+      animation: to-fill 0.9s ease-out forwards;
+    }
+    .to-loader-label {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    @keyframes to-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.93); }
+    }
+    @keyframes to-fill {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+
     /* Top government banner */
     .gov-top-bar {
       background: var(--gov-navy-dark);
@@ -235,6 +299,14 @@
 </head>
 <body>
 
+  <!-- Loading overlay: shows first, fades out once the page is ready -->
+  <div id="to-loader">
+    <div class="to-loader-crest">🚌</div>
+    <div class="to-loader-name">TransitOps</div>
+    <div class="to-loader-track"><div class="to-loader-fill"></div></div>
+    <div class="to-loader-label">Verifying secure connection…</div>
+  </div>
+
   <!-- Government top bar -->
   <div class="gov-top-bar">
     🏛️ <strong>Official Government System</strong> — Authorized Personnel Only. Unauthorized access is prohibited.
@@ -336,6 +408,20 @@
   </div>
 
   <script>
+    // Fade out the loading overlay once the page is fully ready
+    (function () {
+      const overlay = document.getElementById('to-loader');
+      const minDisplay = new Promise((resolve) => setTimeout(resolve, 600));
+      const pageReady = new Promise((resolve) => {
+        if (document.readyState === 'complete') resolve();
+        else window.addEventListener('load', resolve);
+      });
+      Promise.all([minDisplay, pageReady]).then(() => {
+        overlay.classList.add('to-loader-hidden');
+        setTimeout(() => overlay.remove(), 500);
+      });
+    })();
+
     if (localStorage.getItem('transitops_token')) window.location.href = '/index.html';
 
     function switchTab(tab) {
