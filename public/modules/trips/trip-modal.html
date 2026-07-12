@@ -1,0 +1,73 @@
+<!-- Trip modal -->
+<div class="modal-overlay" id="trip-modal">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <div class="modal-title">Create Trip</div>
+      <button class="modal-close" onclick="closeModal('trip-modal')">✕</button>
+    </div>
+    <form id="trip-form" onsubmit="tripFormSubmit(event)">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Source *</label>
+          <input type="text" id="t-source" placeholder="Nairobi" required />
+        </div>
+        <div class="form-group">
+          <label>Destination *</label>
+          <input type="text" id="t-dest" placeholder="Mombasa" required />
+        </div>
+        <div class="form-group col-2">
+          <label>Vehicle * (Available only)</label>
+          <select id="t-vehicle" required>
+            <option value="">Loading vehicles…</option>
+          </select>
+        </div>
+        <div class="form-group col-2">
+          <label>Driver * (Available only)</label>
+          <select id="t-driver" required>
+            <option value="">Loading drivers…</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cargo Weight (kg)</label>
+          <input type="number" id="t-cargo" min="0" step="50" placeholder="0" />
+        </div>
+        <div class="form-group">
+          <label>Planned Distance (km)</label>
+          <input type="number" id="t-distance" min="0" step="1" placeholder="0" />
+        </div>
+        <div class="form-group col-2">
+          <label>Revenue (optional)</label>
+          <input type="number" id="t-revenue" min="0" step="100" placeholder="0" />
+        </div>
+        <div class="form-group col-2">
+          <label>Notes</label>
+          <textarea id="t-notes" placeholder="Additional notes…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('trip-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create Trip</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Complete Trip Modal -->
+<div class="modal-overlay" id="complete-modal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title">Complete Trip</div>
+      <button class="modal-close" onclick="closeModal('complete-modal')">✕</button>
+    </div>
+    <p style="color:var(--text-secondary);font-size:13px;margin-bottom:16px">Enter the actual distance travelled to complete this trip.</p>
+    <input type="hidden" id="complete-trip-id" />
+    <div class="form-group">
+      <label>Actual Distance (km)</label>
+      <input type="number" id="complete-distance" min="0" step="1" placeholder="485" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('complete-modal')">Cancel</button>
+      <button class="btn btn-success" onclick="submitComplete()">✓ Mark Completed</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TransitOps — Safety &amp; Compliance Directorate Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .portal-container { max-width: 1200px; margin: 24px auto; padding: 0 24px; }
+    .safety-banner {
+      background: linear-gradient(135deg, #1b5e20 0%, #0d3b13 100%);
+      color: #fff;
+      border-radius: 8px;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-top: 4px solid #c8972a;
+    }
+    .safety-banner h2 { font-family: 'Inter', sans-serif; font-size: 24px; margin-bottom: 4px; }
+    .safety-banner p { color: rgba(255,255,255,0.85); font-size: 14px; }
+    .safety-stats { display: flex; gap: 20px; }
+    .safety-stat-box {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 6px;
+      padding: 12px 20px;
+      text-align: center;
+    }
+    .safety-stat-box .val { font-size: 22px; font-weight: 800; color: #e8b84b; font-family: 'Inter', sans-serif; }
+    .safety-stat-box .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Official Top Bar -->
+  <div style="background:#0f2547;color:rgba(255,255,255,0.7);font-size:11px;padding:6px 24px;display:flex;justify-content:space-between;">
+    <div>🏛️ <strong>Official Government System</strong> — Ministry of Transport | Safety &amp; Enforcement Directorate</div>
+    <div>Role: <strong>SAFETY OFFICER PORTAL</strong></div>
+  </div>
+  <div class="flag-stripe" style="height:3px;background:linear-gradient(to right,#1a5f1a 33%,#c8972a 33%,#c8972a 66%,#a31d1d 66%)"></div>
+
+  <!-- Header -->
+  <header class="navbar" style="background:#fff;border-bottom:2px solid #d0d9e3;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:40px;height:40px;border-radius:6px;background:#1b5e20;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;">🛡️</div>
+      <div>
+        <div style="font-weight:800;font-size:18px;color:#1b5e20;font-family:'Inter',sans-serif;">TRANSITOPS</div>
+        <div style="font-size:11px;color:#c8972a;font-weight:700;text-transform:uppercase;">Safety &amp; Compliance Portal</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span id="user-display" style="font-size:14px;font-weight:600;color:#1a2535;">Officer Safety</span>
+      <button onclick="logoutSafety()" class="btn btn-secondary btn-sm">Sign Out ⏻</button>
+    </div>
+  </header>
+
+  <div class="portal-container">
+    <!-- Safety Welcome Banner -->
+    <div class="safety-banner">
+      <div>
+        <h2 id="safety-welcome-name">Safety Directorate Portal</h2>
+        <p>Monitor driver licensure compliance, enforce safety ratings, and log roadworthiness inspections.</p>
+      </div>
+      <div class="safety-stats">
+        <div class="safety-stat-box">
+          <div class="val" id="stat-drivers-count">0</div>
+          <div class="lbl">Registered Drivers</div>
+        </div>
+        <div class="safety-stat-box">
+          <div class="val" id="stat-expired-count">0</div>
+          <div class="lbl">Expired Licenses</div>
+        </div>
+        <div class="safety-stat-box">
+          <div class="val" id="stat-avg-score">100</div>
+          <div class="lbl">Avg Safety Score</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Row -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3 style="font-size:18px;font-weight:700;color:#1b5e20;font-family:'Inter',sans-serif;">🛡️ Driver Compliance &amp; Licensure Registry</h3>
+      <button class="btn btn-primary" style="background:#1b5e20;border-color:#1b5e20;" onclick="openAddDriver()">+ Register Driver / License</button>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card" style="background:#fff;border:1px solid #d0d9e3;border-radius:6px;padding:20px;">
+      <div id="drivers-container">Loading drivers…</div>
+    </div>
+  </div>
+
+  <!-- Driver Modal -->
+  <div class="modal-overlay" id="driver-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Register Driver</div>
+        <button class="modal-close" onclick="closeModal('driver-modal')">✕</button>
+      </div>
+      <form onsubmit="saveDriver(event)">
+        <input type="hidden" id="d-id" />
+        <div class="form-grid">
+          <div class="form-group col-2">
+            <label>Full Name *</label>
+            <input type="text" id="d-name" placeholder="John Doe" required />
+          </div>
+          <div class="form-group">
+            <label>License No *</label>
+            <input type="text" id="d-license" placeholder="DL-2026-001" required />
+          </div>
+          <div class="form-group">
+            <label>License Category *</label>
+            <select id="d-category" required>
+              <option>Heavy</option><option>PSV</option><option>A</option><option>B</option><option>C</option><option>E</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>License Expiry Date *</label>
+            <input type="date" id="d-expiry" required />
+          </div>
+          <div class="form-group">
+            <label>Contact Number *</label>
+            <input type="text" id="d-contact" placeholder="+254700000000" required />
+          </div>
+          <div class="form-group">
+            <label>Safety Score (0–100)</label>
+            <input type="number" id="d-score" min="0" max="100" step="0.5" value="100" />
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="d-status">
+              <option>Available</option>
+              <option>Suspended</option>
+              <option>Off Duty</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('driver-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="background:#1b5e20;">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script>
+    function getToken() { return localStorage.getItem('transitops_token'); }
+    function getUser()  { try { return JSON.parse(localStorage.getItem('transitops_user')); } catch (e) { return null; } }
+    function logoutSafety() { localStorage.clear(); window.location.href = '/login.html'; }
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function toast(msg, type='info') {
+      const el = document.createElement('div');
+      el.className = 'toast toast-' + type;
+      el.textContent = msg;
+      document.getElementById('toast-container').appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    async function apiFetch(url, opts = {}) {
+      const token = getToken();
+      opts.headers = { 'Content-Type': 'application/json', ...(opts.headers || {}), Authorization: `Bearer ${token}` };
+      const res = await fetch(url, opts);
+      return res.json();
+    }
+
+    async function loadSafetyPortal() {
+      const user = getUser();
+      if (!user) { window.location.href = '/login.html'; return; }
+      document.getElementById('user-display').textContent = user.name + ' (Safety Officer)';
+      document.getElementById('safety-welcome-name').textContent = 'Safety Directorate — ' + user.name;
+
+      const res = await apiFetch('/api/drivers');
+      if (!res.success) return;
+      const drivers = res.data;
+
+      document.getElementById('stat-drivers-count').textContent = drivers.length;
+      const today = new Date().toISOString().slice(0, 10);
+      const expiredCount = drivers.filter(d => d.license_expiry < today).length;
+      document.getElementById('stat-expired-count').textContent = expiredCount;
+
+      const avg = drivers.length ? (drivers.reduce((s,d)=>s+Number(d.safety_score||100),0)/drivers.length).toFixed(1) : 100;
+      document.getElementById('stat-avg-score').textContent = avg;
+
+      const html = `
+        <table class="table" style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:2px solid #d0d9e3;text-align:left;">
+              <th style="padding:12px;">Driver Name</th>
+              <th style="padding:12px;">License No</th>
+              <th style="padding:12px;">Category</th>
+              <th style="padding:12px;">Expiry Date</th>
+              <th style="padding:12px;">Safety Score</th>
+              <th style="padding:12px;">Status</th>
+              <th style="padding:12px;text-align:right;">Enforcement Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${drivers.map(d => {
+              const isExpired = d.license_expiry < today;
+              return `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:12px;"><strong>${d.name}</strong><br><span style="font-size:11px;color:#6b7d91">${d.contact_no}</span></td>
+                <td style="padding:12px;">${d.license_no}</td>
+                <td style="padding:12px;"><span class="badge badge-draft">${d.license_category}</span></td>
+                <td style="padding:12px;">
+                  ${d.license_expiry}
+                  ${isExpired ? '<span style="color:#a31d1d;font-weight:700;margin-left:6px;">EXPIRED ⚠️</span>' : ''}
+                </td>
+                <td style="padding:12px;">
+                  <div style="font-weight:700;color:${d.safety_score>=85?'#1b5e20':d.safety_score>=70?'#c8972a':'#a31d1d'}">${d.safety_score} / 100</div>
+                </td>
+                <td style="padding:12px;"><span class="badge badge-${d.status.toLowerCase()}">${d.status}</span></td>
+                <td style="padding:12px;text-align:right;">
+                  <button class="btn btn-secondary btn-sm" onclick='editDriverProfile(${JSON.stringify(d)})'>✏️ Edit</button>
+                  ${d.status !== 'Suspended' ? `<button class="btn btn-danger btn-sm" onclick="suspendDriver(${d.id})">🛑 Suspend</button>` : `<button class="btn btn-success btn-sm" onclick="activateDriver(${d.id})">✓ Activate</button>`}
+                </td>
+              </tr>
+            `}).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('drivers-container').innerHTML = html;
+    }
+
+    function openAddDriver() {
+      document.getElementById('d-id').value = '';
+      document.getElementById('d-name').value = '';
+      document.getElementById('d-license').value = '';
+      document.getElementById('d-expiry').value = '';
+      document.getElementById('d-contact').value = '';
+      document.getElementById('d-score').value = '100';
+      openModal('driver-modal');
+    }
+
+    function editDriverProfile(d) {
+      document.getElementById('d-id').value = d.id;
+      document.getElementById('d-name').value = d.name;
+      document.getElementById('d-license').value = d.license_no;
+      document.getElementById('d-category').value = d.license_category;
+      document.getElementById('d-expiry').value = (d.license_expiry||'').slice(0,10);
+      document.getElementById('d-contact').value = d.contact_no;
+      document.getElementById('d-score').value = d.safety_score;
+      document.getElementById('d-status').value = d.status;
+      openModal('driver-modal');
+    }
+
+    async function saveDriver(e) {
+      e.preventDefault();
+      const id = document.getElementById('d-id').value;
+      const body = {
+        name: document.getElementById('d-name').value,
+        license_no: document.getElementById('d-license').value,
+        license_category: document.getElementById('d-category').value,
+        license_expiry: document.getElementById('d-expiry').value,
+        contact_no: document.getElementById('d-contact').value,
+        safety_score: parseFloat(document.getElementById('d-score').value||100),
+        status: document.getElementById('d-status').value
+      };
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/drivers/${id}` : '/api/drivers';
+      const res = await apiFetch(url, { method, body: JSON.stringify(body) });
+      if (res.success) {
+        toast('Driver saved successfully!', 'success');
+        closeModal('driver-modal');
+        loadSafetyPortal();
+      } else toast(res.message, 'error');
+    }
+
+    async function suspendDriver(id) {
+      const res = await apiFetch(`/api/drivers/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'Suspended' }) });
+      if (res.success) { toast('Driver Suspended.', 'success'); loadSafetyPortal(); }
+    }
+
+    async function activateDriver(id) {
+      const res = await apiFetch(`/api/drivers/${id}`, { method: 'PUT', body: JSON.stringify({ status: 'Available' }) });
+      if (res.success) { toast('Driver Re-activated.', 'success'); loadSafetyPortal(); }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadSafetyPortal);
+  </script>
+  <script src="/js/water-ripple.js"></script>
+</body>
+</html>

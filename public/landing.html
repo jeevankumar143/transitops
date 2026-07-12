@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TransitOps — Official Smart Transport Operations Platform | Ministry of Transport</title>
+  <meta name="description" content="TransitOps is the official government platform for national transport operations, fleet registry, trip dispatching, maintenance compliance, and financial auditing." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gov-navy:       #1a3a6b;
+      --gov-navy-dark:  #0f2547;
+      --gov-navy-light: #2a5298;
+      --gov-green:      #1a5f1a;
+      --gov-green-light:#2d7d2d;
+      --gov-gold:       #c8972a;
+      --gov-gold-light: #e8b84b;
+      --gov-red:        #a31d1d;
+      --border-color:   #d0d9e3;
+      --text-primary:   #1a2535;
+      --text-secondary: #3d5166;
+      --text-muted:     #6b7d91;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', 'Inter', Arial, sans-serif;
+      background: #f4f6f9;
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; }
+
+    /* Top government banner */
+    .gov-top-bar {
+      background: var(--gov-navy-dark);
+      color: rgba(255,255,255,0.8);
+      font-size: 11px;
+      padding: 7px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      letter-spacing: 0.3px;
+    }
+    .gov-top-bar strong { color: #fff; }
+
+    /* Flag stripe */
+    .flag-stripe {
+      height: 4px;
+      background: linear-gradient(to right,
+        var(--gov-green) 0%,   var(--gov-green) 33.3%,
+        var(--gov-gold)  33.3%, var(--gov-gold)  66.6%,
+        var(--gov-red)   66.6%, var(--gov-red)   100%
+      );
+    }
+
+    /* Navbar */
+    .navbar {
+      background: #ffffff;
+      border-bottom: 2px solid var(--border-color);
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(26,58,107,0.06);
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-icon {
+      width: 44px; height: 44px;
+      border-radius: 6px;
+      background: var(--gov-navy);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      border: 2px solid var(--gov-gold);
+    }
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gov-navy);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
+    .brand-text span {
+      font-size: 11px;
+      color: var(--gov-gold);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Top right Auth buttons */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 4px;
+      font-size: 13.5px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-signin {
+      background: #ffffff;
+      color: var(--gov-navy);
+      border: 2px solid var(--gov-navy);
+    }
+    .btn-signin:hover {
+      background: #f0f5fc;
+    }
+    .btn-signup {
+      background: var(--gov-navy);
+      color: #ffffff;
+      border: 2px solid var(--gov-navy);
+      box-shadow: 0 2px 8px rgba(26,58,107,0.25);
+    }
+    .btn-signup:hover {
+      background: var(--gov-navy-dark);
+      border-color: var(--gov-navy-dark);
+    }
+
+    /* Hero section */
+    .hero {
+      background: linear-gradient(135deg, var(--gov-navy-dark) 0%, var(--gov-navy) 60%, #1c4b82 100%);
+      color: #ffffff;
+      padding: 72px 40px 84px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 4px solid var(--gov-gold);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 450px; height: 450px;
+      background: radial-gradient(circle, rgba(200,151,42,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--gov-gold-light);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1.18;
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+    .hero-title span {
+      color: var(--gov-gold-light);
+    }
+    .hero-desc {
+      font-size: 16.5px;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 32px;
+      max-width: 580px;
+      line-height: 1.7;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-hero-primary {
+      background: var(--gov-gold);
+      color: var(--gov-navy-dark);
+      padding: 13px 28px;
+      font-size: 15px;
+      border: none;
+      box-shadow: 0 4px 14px rgba(200,151,42,0.35);
+    }
+    .btn-hero-primary:hover {
+      background: var(--gov-gold-light);
+    }
+    .btn-hero-secondary {
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 13px 28px;
+      font-size: 15px;
+    }
+    .btn-hero-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Hero side panel card */
+    .hero-card {
+      background: #ffffff;
+      color: var(--text-primary);
+      border-radius: 8px;
+      padding: 28px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+      border-top: 5px solid var(--gov-navy);
+    }
+    .hero-card-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .system-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gov-green-light);
+      background: #e8f5e9;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+    .system-status::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--gov-green-light);
+    }
+    .mini-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .mini-stat {
+      background: #f7f9fc;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 14px;
+    }
+    .mini-stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--gov-navy);
+      font-family: 'Inter', sans-serif;
+    }
+    .mini-stat-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .notice-box {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-left: 4px solid var(--gov-gold);
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 12.5px;
+      color: #5d4800;
+    }
+
+    /* Modules Section */
+    .section {
+      padding: 72px 40px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .section-head {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gov-navy-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--gov-navy);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+      gap: 24px;
+    }
+    .module-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-top: 4px solid var(--gov-navy);
+      border-radius: 6px;
+      padding: 28px;
+      box-shadow: 0 2px 8px rgba(26,58,107,0.05);
+      transition: all 0.2s;
+    }
+    .module-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(26,58,107,0.12);
+    }
+    .module-card.green { border-top-color: var(--gov-green-light); }
+    .module-card.gold  { border-top-color: var(--gov-gold); }
+    .module-card.red   { border-top-color: var(--gov-red); }
+
+    .module-icon {
+      width: 48px; height: 48px;
+      border-radius: 6px;
+      background: #f0f5fc;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin-bottom: 18px;
+    }
+    .module-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gov-navy);
+      font-family: 'Inter', sans-serif;
+      margin-bottom: 10px;
+    }
+    .module-desc {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--gov-navy-dark);
+      color: rgba(255,255,255,0.6);
+      padding: 36px 40px;
+      border-top: 3px solid var(--gov-gold);
+      font-size: 12.5px;
+    }
+    .footer-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-brand h3 {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .hero-container { grid-template-columns: 1fr; }
+      .navbar { padding: 16px 20px; }
+      .hero { padding: 48px 20px; }
+      .section { padding: 48px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Official Top Bar -->
+  <div class="gov-top-bar">
+    <div>🏛️ <strong>Republic of Kenya — Ministry of Transport &amp; Infrastructure</strong> | Official Operations System</div>
+    <div>System Status: <strong>Operational</strong></div>
+  </div>
+
+  <!-- Flag Stripe -->
+  <div class="flag-stripe"></div>
+
+  <!-- Navbar with Top Right Log In and Sign Up Buttons -->
+  <header class="navbar">
+    <div class="brand-group">
+      <div class="brand-icon">🚌</div>
+      <div class="brand-text">
+        <h1>TRANSITOPS</h1>
+        <span>Smart Fleet Operations Platform</span>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="/login.html?mode=login" class="btn btn-signin">Log In</a>
+      <a href="/login.html?mode=register" class="btn btn-signup">Sign Up</a>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <div class="hero-container">
+      <div>
+        <div class="hero-badge">⭐ Official Government Portal v1.0</div>
+        <h1 class="hero-title">
+          Intelligent Transport &amp;<br />
+          <span>National Fleet Management</span>
+        </h1>
+        <p class="hero-desc">
+          TransitOps is the central digital command platform designed for public transport authorities and regulated operators. Digitizing vehicle registry, driver safety compliance, automated dispatch workflows, and real-time operational auditing.
+        </p>
+        <div class="hero-cta">
+          <a href="/login.html?mode=login" class="btn btn-hero-primary">Access Officer Portal →</a>
+          <a href="#capabilities" class="btn btn-hero-secondary">Explore Modules ↓</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-card-header">
+          <span>Live Operations Overview</span>
+          <span class="system-status">Active Feed</span>
+        </div>
+        <div class="mini-stat-grid">
+          <div class="mini-stat">
+            <div class="mini-stat-val">100%</div>
+            <div class="mini-stat-label">Regulatory Compliance</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val">4 Roles</div>
+            <div class="mini-stat-label">RBAC Security Tier</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val">Real-Time</div>
+            <div class="mini-stat-label">Dispatch &amp; Lifecycle</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-val">CSV / Auditing</div>
+            <div class="mini-stat-label">Financial Analytics</div>
+          </div>
+        </div>
+        <div class="notice-box">
+          🔒 <strong>Authorized Personnel Only:</strong> Access requires verified credentials assigned by the Ministry Fleet Manager or Administrator.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PUBLIC CITIZEN ORDER TRACKING SECTION -->
+  <section class="section" id="track-order" style="padding: 40px; margin-top: -30px;">
+    <div style="background: #ffffff; border: 2px solid var(--gov-gold); border-radius: 8px; padding: 32px; box-shadow: 0 8px 30px rgba(26,58,107,0.08);">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 11px; font-weight: 700; color: var(--gov-gold); text-transform: uppercase; letter-spacing: 1px;">Citizen &amp; Client Service Portal</div>
+        <h2 style="font-size: 26px; font-weight: 800; color: var(--gov-navy); font-family: 'Inter', sans-serif; margin-top: 4px;">🔍 Track Your Dispatch / Order</h2>
+        <p style="font-size: 14px; color: var(--text-secondary); max-width: 600px; margin: 6px auto 0;">Enter your Order Number, Tracking ID, or destination to instantly track real-time delivery status, vehicle assignment, and dispatch milestones.</p>
+      </div>
+
+      <form onsubmit="handleTrackOrder(event)" style="max-width: 580px; margin: 0 auto; display: flex; gap: 12px;">
+        <input type="text" id="track-input" required placeholder="Enter Order ID (e.g. 1, 2, TRP-101, or Mombasa)..." style="flex: 1; padding: 14px 18px; border: 2px solid var(--border-color); border-radius: 6px; font-size: 15px; outline: none;" />
+        <button type="submit" id="track-btn" class="btn" style="background: var(--gov-navy); color: #fff; padding: 14px 28px; font-weight: 700; font-size: 15px; border-radius: 6px; border: none; cursor: pointer;">Track Order →</button>
+      </form>
+
+      <!-- Tracking Result Container -->
+      <div id="track-result" style="max-width: 720px; margin: 28px auto 0; display: none;"></div>
+    </div>
+  </section>
+
+  <!-- Core Capabilities Section -->
+  <section class="section" id="capabilities">
+    <div class="section-head">
+      <div class="section-tag">System Architecture</div>
+      <h2 class="section-title">End-to-End Operational Modules</h2>
+    </div>
+
+    <div class="modules-grid">
+      <!-- Module 1 -->
+      <div class="module-card">
+        <div class="module-icon">🛡️</div>
+        <h3 class="module-title">Security &amp; Role Access</h3>
+        <p class="module-desc">
+          Enforced Role-Based Access Control (RBAC) with secure JWT session tokens for Fleet Managers, Safety Officers, Financial Analysts, and Drivers.
+        </p>
+      </div>
+
+      <!-- Module 2 -->
+      <div class="module-card green">
+        <div class="module-icon">🚛</div>
+        <h3 class="module-title">Fleet &amp; Driver Registry</h3>
+        <p class="module-desc">
+          Complete asset lifecycle oversight with real-time status filtering (`Available`, `On Trip`, `In Shop`) and strict driver license expiry validation.
+        </p>
+      </div>
+
+      <!-- Module 3 -->
+      <div class="module-card gold">
+        <div class="module-icon">🗺️</div>
+        <h3 class="module-title">Trip State Machine</h3>
+        <p class="module-desc">
+          Automated dispatch state transitions (`Draft → Dispatched → Completed`). Enforces cargo capacity limits and synchronizes vehicle/driver states atomically.
+        </p>
+      </div>
+
+      <!-- Module 4 -->
+      <div class="module-card red">
+        <div class="module-icon">📈</div>
+        <h3 class="module-title">Financial &amp; Fuel Auditing</h3>
+        <p class="module-desc">
+          Live KPI monitoring, ROI calculation per asset, fuel efficiency tracking (km/L), expense categorization, and instant CSV export reports.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h3>TRANSITOPS — Ministry of Transport &amp; Infrastructure</h3>
+        <p style="margin-top:4px">Official Smart Transport Operations Platform</p>
+      </div>
+      <div>
+        © 2026 Republic of Kenya. All rights reserved. | Confidential &amp; Protected Government System
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    async function handleTrackOrder(e) {
+      e.preventDefault();
+      const input = document.getElementById('track-input').value.trim();
+      const resultBox = document.getElementById('track-result');
+      const btn = document.getElementById('track-btn');
+
+      if (!input) return;
+      btn.textContent = 'Searching...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`/api/public/track?q=${encodeURIComponent(input)}`);
+        const json = await res.json();
+
+        resultBox.style.display = 'block';
+
+        if (!json.success) {
+          resultBox.innerHTML = `
+            <div style="background: #fde8e8; border: 1px solid #f8b4b4; color: #9b1c1c; padding: 16px; border-radius: 6px; text-align: center;">
+              <strong>⚠️ Order Not Found:</strong> ${json.message || 'No delivery found matching that tracking ID.'}
+            </div>
+          `;
+          return;
+        }
+
+        const d = json.data;
+        const statusColor = d.status === 'Completed' ? '#1b5e20' : d.status === 'Dispatched' ? '#1a3a6b' : '#c8972a';
+        const statusBg    = d.status === 'Completed' ? '#e8f5e9' : d.status === 'Dispatched' ? '#e3f2fd' : '#fff8e1';
+
+        // Progress bar step calculation
+        const step1 = true;
+        const step2 = d.status === 'Dispatched' || d.status === 'Completed';
+        const step3 = d.status === 'Completed';
+
+        resultBox.innerHTML = `
+          <div style="border: 1px solid var(--border-color); border-radius: 8px; background: #f8fafd; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <!-- Status Header -->
+            <div style="background: ${statusBg}; padding: 16px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 11px; font-weight: 700; color: ${statusColor}; text-transform: uppercase;">Tracking Reference</span>
+                <div style="font-size: 20px; font-weight: 800; color: var(--gov-navy); font-family: 'Inter', sans-serif;">#${d.tracking_code}</div>
+              </div>
+              <div style="padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; background: ${statusColor}; color: #fff;">
+                ${d.status.toUpperCase()}
+              </div>
+            </div>
+
+            <!-- Visual Progress Timeline -->
+            <div style="padding: 24px; background: #fff; border-bottom: 1px solid var(--border-color);">
+              <div style="display: flex; justify-content: space-between; align-items: center; position: relative; max-width: 480px; margin: 0 auto;">
+                <!-- Step 1 -->
+                <div style="text-align: center; z-index: 2;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: ${step1 ? '#1a3a6b' : '#e2e8f0'}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto;">✓</div>
+                  <div style="font-size: 12px; font-weight: 700; margin-top: 6px; color: ${step1 ? '#1a3a6b' : '#94a3b8'};">Order Registered</div>
+                </div>
+                <!-- Line 1 -->
+                <div style="flex: 1; height: 3px; background: ${step2 ? '#1a3a6b' : '#e2e8f0'}; margin: 0 8px; margin-top: -18px;"></div>
+                <!-- Step 2 -->
+                <div style="text-align: center; z-index: 2;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: ${step2 ? '#1a3a6b' : '#e2e8f0'}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto;">🚛</div>
+                  <div style="font-size: 12px; font-weight: 700; margin-top: 6px; color: ${step2 ? '#1a3a6b' : '#94a3b8'};">Dispatched On-Road</div>
+                </div>
+                <!-- Line 2 -->
+                <div style="flex: 1; height: 3px; background: ${step3 ? '#1b5e20' : '#e2e8f0'}; margin: 0 8px; margin-top: -18px;"></div>
+                <!-- Step 3 -->
+                <div style="text-align: center; z-index: 2;">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: ${step3 ? '#1b5e20' : '#e2e8f0'}; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto;">🏁</div>
+                  <div style="font-size: 12px; font-weight: 700; margin-top: 6px; color: ${step3 ? '#1b5e20' : '#94a3b8'};">Delivered Completed</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Delivery Details Grid -->
+            <div style="padding: 20px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 13.5px;">
+              <div>
+                <div style="color: var(--text-muted); font-size: 11.5px; font-weight: 600;">ROUTE / CONSIGNMENT</div>
+                <div style="font-weight: 700; color: var(--gov-navy); margin-top: 2px;">${d.source} → ${d.destination}</div>
+              </div>
+              <div>
+                <div style="color: var(--text-muted); font-size: 11.5px; font-weight: 600;">CARGO SPECIFICATION</div>
+                <div style="font-weight: 700; color: var(--gov-navy); margin-top: 2px;">${d.cargo_weight} kg Consignment</div>
+              </div>
+              <div>
+                <div style="color: var(--text-muted); font-size: 11.5px; font-weight: 600;">ASSIGNED UNIT</div>
+                <div style="font-weight: 700; color: var(--gov-navy); margin-top: 2px;">${d.vehicle_registration} (${d.vehicle_type})</div>
+              </div>
+              <div>
+                <div style="color: var(--text-muted); font-size: 11.5px; font-weight: 600;">DISPATCH OFFICER</div>
+                <div style="font-weight: 700; color: var(--gov-navy); margin-top: 2px;">${d.driver_name}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `
+          <div style="background: #fde8e8; border: 1px solid #f8b4b4; color: #9b1c1c; padding: 16px; border-radius: 6px; text-align: center;">
+            Error searching order tracking details. Please try again.
+          </div>
+        `;
+      } finally {
+        btn.textContent = 'Track Order →';
+        btn.disabled = false;
+      }
+    }
+  </script>
+  <script src="/js/water-ripple.js"></script>
+</body>
+</html>

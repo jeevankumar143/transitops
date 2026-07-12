@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TransitOps — Login | Official Transport Operations System</title>
+  <meta name="description" content="TransitOps Official Smart Transport Operations Platform — Secure Sign In" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --gov-navy: #1a3a6b;
+      --gov-navy-dark: #0f2547;
+      --gov-navy-light: #2a5298;
+      --gov-green: #1a5f1a;
+      --gov-gold: #c8972a;
+      --gov-gold-light: #e8b84b;
+      --gov-red: #a31d1d;
+      --border-color: #d0d9e3;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Source Sans 3', 'Inter', Arial, sans-serif;
+      background: #eef1f6;
+      color: #1a2535;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- Loading overlay --- */
+    #to-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: var(--gov-navy-dark);
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #to-loader.to-loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .to-loader-crest {
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid var(--gov-gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      animation: to-pulse 1.2s ease-in-out infinite;
+    }
+
+    .to-loader-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .to-loader-track {
+      width: 200px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .to-loader-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gov-gold), var(--gov-gold-light));
+      animation: to-fill 0.9s ease-out forwards;
+    }
+
+    .to-loader-label {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes to-pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.55;
+        transform: scale(0.93);
+      }
+    }
+
+    @keyframes to-fill {
+      from {
+        width: 0%;
+      }
+
+      to {
+        width: 100%;
+      }
+    }
+
+    /* Top government banner */
+    .gov-top-bar {
+      background: var(--gov-navy-dark);
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 11px;
+      padding: 7px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .gov-top-bar strong {
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    /* Flag stripe */
+    .flag-stripe {
+      height: 5px;
+      background: linear-gradient(to right,
+          var(--gov-green) 0%, var(--gov-green) 33.3%,
+          #ffffff 33.3%, #ffffff 66.6%,
+          var(--gov-red) 66.6%, var(--gov-red) 100%);
+    }
+
+    /* Official header */
+    .official-header {
+      background: var(--gov-navy);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 3px solid var(--gov-gold);
+    }
+
+    .crest {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .org-name {
+      color: #fff;
+    }
+
+    .org-name h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .org-name p {
+      font-size: 12px;
+      color: var(--gov-gold-light);
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    /* Main content */
+    .page-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* System title card */
+    .system-notice {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-left: 4px solid var(--gov-gold);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #5d4800;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .login-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-top: 4px solid var(--gov-navy);
+      border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(26, 58, 107, 0.1);
+      overflow: hidden;
+    }
+
+    .login-card-header {
+      background: #f7f9fc;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .login-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--gov-navy);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .login-card-sub {
+      font-size: 12px;
+      color: #6b7d91;
+      margin-top: 3px;
+    }
+
+    .login-card-body {
+      padding: 24px;
+    }
+
+    .tab-toggle {
+      display: flex;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      background: #f7f9fc;
+      color: #6b7d91;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.18s;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .tab-btn:last-child {
+      border-right: none;
+    }
+
+    .tab-btn.active {
+      background: var(--gov-navy);
+      color: #ffffff;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gov-navy);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      background: #fafbfc;
+      border: 1px solid #b0bccb;
+      border-radius: 4px;
+      color: #1a2535;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--gov-navy-light);
+      box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+      background: #ffffff;
+    }
+
+    .form-group select option {
+      background: #ffffff;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: var(--gov-navy);
+      border: 1px solid var(--gov-navy-dark);
+      border-radius: 4px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.18s, box-shadow 0.18s;
+      box-shadow: 0 2px 6px rgba(26, 58, 107, 0.2);
+      letter-spacing: 0.3px;
+    }
+
+    .btn-login:hover {
+      background: var(--gov-navy-dark);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .login-error {
+      display: none;
+      background: #ffebee;
+      border: 1px solid #ef9a9a;
+      border-left: 4px solid var(--gov-red);
+      color: #b71c1c;
+      padding: 10px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    /* Quick fill section */
+    .quick-fill {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .quick-fill-label {
+      font-size: 11px;
+      color: #6b7d91;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .quick-btns {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .quick-btn {
+      padding: 5px 12px;
+      background: #f0f5fc;
+      border: 1px solid #b0bccb;
+      border-radius: 3px;
+      color: var(--gov-navy);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.18s;
+    }
+
+    .quick-btn:hover {
+      background: var(--gov-navy);
+      color: #fff;
+      border-color: var(--gov-navy);
+    }
+
+    /* Footer */
+    .page-footer {
+      background: var(--gov-navy-dark);
+      color: rgba(255, 255, 255, 0.45);
+      text-align: center;
+      font-size: 11px;
+      padding: 12px 24px;
+      border-top: 2px solid var(--gov-gold);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Loading overlay: shows first, fades out once the page is ready -->
+  <div id="to-loader">
+    <div class="to-loader-crest">🚌</div>
+    <div class="to-loader-name">TransitOps</div>
+    <div class="to-loader-track">
+      <div class="to-loader-fill"></div>
+    </div>
+    <div class="to-loader-label">Verifying secure connection…</div>
+  </div>
+
+  <!-- Government top bar -->
+  <div class="gov-top-bar">
+    🏛️ <strong>Official Government System</strong> — Authorized Personnel Only. Unauthorized access is prohibited.
+  </div>
+
+  <!-- Flag stripe -->
+  <div class="flag-stripe"></div>
+
+  <!-- Official header -->
+  <div class="official-header">
+    <div class="crest">🚌</div>
+    <div class="org-name">
+      <h1>TRANSITOPS</h1>
+      <p>Smart Transport Operations Platform — Ministry of Transport</p>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="page-body">
+    <div class="login-container">
+
+      <div class="system-notice">
+        ⚠️ <span>This system contains official government data. All access is logged and monitored.</span>
+      </div>
+
+      <div class="login-card">
+        <div class="login-card-header">
+          <div class="login-card-title" id="form-heading">Officer Sign In</div>
+          <div class="login-card-sub" id="form-subheading">Enter your credentials to access the operations dashboard
+          </div>
+        </div>
+        <div class="login-card-body">
+
+          <div class="tab-toggle">
+            <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+            <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
+          </div>
+
+          <!-- Login Form -->
+          <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label for="login-email">Email Address</label>
+              <input type="email" id="login-email" placeholder="officer@ministry.go.ke" required />
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <div style="position:relative;">
+                <input type="password" id="login-password" placeholder="Enter your password" required style="padding-right:40px;" />
+                <button type="button" onclick="togglePass('login-password', this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:#6b7d91;" title="Toggle Password">👁️</button>
+              </div>
+            </div>
+            <button type="submit" class="btn-login" id="btn-login">SIGN IN →</button>
+            <div class="login-error" id="login-error"></div>
+            <div style="text-align:center;margin-top:14px;">
+              <a href="javascript:void(0)" onclick="openCredsModal()" style="font-size:12px;color:var(--gov-navy);font-weight:600;text-decoration:none;">ℹ️ View Testing &amp; Demo Credentials</a>
+            </div>
+          </form>
+
+          <!-- Register Form -->
+          <form id="register-form" style="display:none" onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label for="reg-name">Full Name</label>
+              <input type="text" id="reg-name" placeholder="Full official name" required />
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Official Email</label>
+              <input type="email" id="reg-email" placeholder="name@ministry.go.ke" required />
+            </div>
+            <div class="form-group">
+              <label for="reg-role">Official Role</label>
+              <select id="reg-role" required>
+                <option value="">— Select your role —</option>
+                <option value="fleet_manager">Fleet Manager</option>
+                <option value="safety_officer">Safety Officer</option>
+                <option value="financial_analyst">Financial Analyst</option>
+                <option value="driver">Driver</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <div style="position:relative;">
+                <input type="password" id="reg-password" placeholder="Enter secure password"
+                  oninput="checkPasswordRequirements(this.value)" required style="padding-right:40px;" />
+                <button type="button" onclick="togglePass('reg-password', this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:#6b7d91;" title="Toggle Password">👁️</button>
+              </div>
+
+              <!-- Animated Password Strength Bar -->
+              <div style="margin-top:8px;">
+                <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:3px;">
+                  <span style="color:#6b7d91;">STRENGTH</span>
+                  <span id="strength-label" style="color:#c0392b;">Weak</span>
+                </div>
+                <div style="width:100%;height:4px;background:#e2e8f0;border-radius:2px;overflow:hidden;">
+                  <div id="strength-bar" style="width:0%;height:100%;background:#c0392b;transition:width 0.3s ease, background 0.3s ease;"></div>
+                </div>
+              </div>
+
+              <!-- Password Requirements Checklist -->
+              <div id="password-checklist" style="margin-top:10px;font-size:12.5px;line-height:1.6;font-weight:600;">
+                <div id="req-length" style="color:#c0392b;transition:color 0.2s;">✕ At least 8 characters</div>
+                <div id="req-letter" style="color:#c0392b;transition:color 0.2s;">✕ At least 1 alphabet letter</div>
+                <div id="req-number" style="color:#c0392b;transition:color 0.2s;">✕ At least 1 number</div>
+              </div>
+            </div>
+            <button type="submit" class="btn-login" id="btn-register" disabled
+              style="opacity:0.6;cursor:not-allowed;">CREATE ACCOUNT →</button>
+            <div class="login-error" id="register-error"></div>
+          </form>
+
+          <!-- Testing Credentials Modal -->
+          <div id="creds-modal" style="display:none;position:fixed;inset:0;background:rgba(15,37,71,0.65);z-index:999;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:8px;max-width:420px;width:90%;padding:24px;box-shadow:0 12px 35px rgba(0,0,0,0.25);position:relative;">
+              <button onclick="closeCredsModal()" style="position:absolute;right:16px;top:16px;background:none;border:none;font-size:18px;cursor:pointer;color:#6b7d91;">✕</button>
+              <h3 style="font-size:17px;font-weight:800;color:var(--gov-navy);margin-bottom:6px;">ℹ️ Official Demo &amp; Evaluation Credentials</h3>
+              <p style="font-size:12.5px;color:#6b7d91;margin-bottom:16px;">All demo accounts share password: <strong style="color:var(--gov-navy);">password123</strong></p>
+              <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;">
+                <div style="padding:10px;background:#f7f9fc;border:1px solid var(--border-color);border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+                  <div><strong>Fleet Manager:</strong> admin@transitops.io</div>
+                  <button onclick="fillAndClose('admin@transitops.io')" class="quick-btn">Use</button>
+                </div>
+                <div style="padding:10px;background:#f7f9fc;border:1px solid var(--border-color);border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+                  <div><strong>Safety Officer:</strong> safety@transitops.io</div>
+                  <button onclick="fillAndClose('safety@transitops.io')" class="quick-btn">Use</button>
+                </div>
+                <div style="padding:10px;background:#f7f9fc;border:1px solid var(--border-color);border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+                  <div><strong>Financial Analyst:</strong> finance@transitops.io</div>
+                  <button onclick="fillAndClose('finance@transitops.io')" class="quick-btn">Use</button>
+                </div>
+                <div style="padding:10px;background:#f7f9fc;border:1px solid var(--border-color);border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+                  <div><strong>Driver:</strong> driver@transitops.io</div>
+                  <button onclick="fillAndClose('driver@transitops.io')" class="quick-btn">Use</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="page-footer">
+    © 2026 Ministry of Transport &amp; Infrastructure — TransitOps v1.0 | All rights reserved | Confidential Government
+    System
+  </div>
+
+  <script>
+    // Fade out the loading overlay once the page is fully ready
+    (function () {
+      const overlay = document.getElementById('to-loader');
+      const minDisplay = new Promise((resolve) => setTimeout(resolve, 600));
+      const pageReady = new Promise((resolve) => {
+        if (document.readyState === 'complete') resolve();
+        else window.addEventListener('load', resolve);
+      });
+      Promise.all([minDisplay, pageReady]).then(() => {
+        overlay.classList.add('to-loader-hidden');
+        setTimeout(() => overlay.remove(), 500);
+      });
+    })();
+
+    // Clear previous session when visiting login page
+    localStorage.removeItem('transitops_token');
+    localStorage.removeItem('transitops_user');
+
+    function normalizeRole(role) {
+      if (!role && role !== 0) return null;
+      const value = String(role).trim().toLowerCase().replace(/\s+/g, '_');
+      const aliases = {
+        fleet_manager: 'fleet_manager',
+        'fleet-manager': 'fleet_manager',
+        'fleet manager': 'fleet_manager',
+        admin: 'fleet_manager',
+        driver: 'driver',
+        safety_officer: 'safety_officer',
+        'safety-officer': 'safety_officer',
+        'safety officer': 'safety_officer',
+        financial_analyst: 'financial_analyst',
+        'financial-analyst': 'financial_analyst',
+        'financial analyst': 'financial_analyst',
+        finance: 'financial_analyst',
+        analyst: 'financial_analyst'
+      };
+      return aliases[value] || null;
+    }
+
+    function redirectUserRole(user) {
+      if (!user || !user.role) {
+        window.location.href = '/index.html';
+        return;
+      }
+      const role = normalizeRole(user.role);
+      if (role === 'driver') {
+        window.location.href = '/portal-driver.html';
+      } else if (role === 'safety_officer') {
+        window.location.href = '/portal-safety.html';
+      } else if (role === 'financial_analyst') {
+        window.location.href = '/portal-finance.html';
+      } else {
+        window.location.href = '/index.html';
+      }
+    }
+
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('login-form').style.display = isLogin ? 'block' : 'none';
+      document.getElementById('register-form').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('tab-login').classList.toggle('active', isLogin);
+      document.getElementById('tab-register').classList.toggle('active', !isLogin);
+      document.getElementById('form-heading').textContent = isLogin ? 'Officer Sign In' : 'Create Account';
+      document.getElementById('form-subheading').textContent = isLogin
+        ? 'Enter your credentials to access the operations dashboard'
+        : 'Register for system access (requires administrator approval)';
+    }
+
+    function quickFill(email) {
+      switchTab('login');
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = 'password123';
+      document.getElementById('login-password').focus();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-login');
+      const err = document.getElementById('login-error');
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      btn.textContent = 'Authenticating…'; btn.disabled = true;
+      err.style.display = 'none';
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const rawText = await res.text();
+        let data = { success: false, message: 'Unable to sign in right now.' };
+        if (rawText) {
+          try { data = JSON.parse(rawText); } catch { data = { success: false, message: rawText }; }
+        }
+        if (!data.success) throw new Error(data.message || 'Unable to sign in right now.');
+        localStorage.setItem('transitops_token', data.data.token);
+        localStorage.setItem('transitops_user', JSON.stringify(data.data.user));
+        redirectUserRole(data.data.user);
+      } catch (e) {
+        err.textContent = e.message; err.style.display = 'block';
+        btn.textContent = 'SIGN IN →'; btn.disabled = false;
+      }
+    }
+
+    function checkPasswordRequirements(val) {
+      const hasLength = val.length >= 8;
+      const hasLetter = /[a-zA-Z]/.test(val);
+      const hasNumber = /[0-9]/.test(val);
+
+      const elLength = document.getElementById('req-length');
+      const elLetter = document.getElementById('req-letter');
+      const elNumber = document.getElementById('req-number');
+
+      elLength.style.color = hasLength ? '#1b5e20' : '#c0392b';
+      elLength.textContent = (hasLength ? '✓ ' : '✕ ') + 'At least 8 characters';
+
+      elLetter.style.color = hasLetter ? '#1b5e20' : '#c0392b';
+      elLetter.textContent = (hasLetter ? '✓ ' : '✕ ') + 'At least 1 alphabet letter';
+
+      elNumber.style.color = hasNumber ? '#1b5e20' : '#c0392b';
+      elNumber.textContent = (hasNumber ? '✓ ' : '✕ ') + 'At least 1 number';
+
+      // Strength bar calculation
+      let score = 0;
+      if (hasLength) score++;
+      if (hasLetter) score++;
+      if (hasNumber) score++;
+      if (val.length >= 12) score++;
+
+      const sBar   = document.getElementById('strength-bar');
+      const sLabel = document.getElementById('strength-label');
+      if (val.length === 0) {
+        sBar.style.width = '0%';
+        sLabel.textContent = 'Weak';
+        sLabel.style.color = '#c0392b';
+      } else if (score <= 1) {
+        sBar.style.width = '25%';
+        sBar.style.background = '#c0392b';
+        sLabel.textContent = 'Weak';
+        sLabel.style.color = '#c0392b';
+      } else if (score === 2) {
+        sBar.style.width = '60%';
+        sBar.style.background = '#d97706';
+        sLabel.textContent = 'Moderate';
+        sLabel.style.color = '#d97706';
+      } else if (score === 3) {
+        sBar.style.width = '85%';
+        sBar.style.background = '#1b5e20';
+        sLabel.textContent = 'Strong';
+        sLabel.style.color = '#1b5e20';
+      } else {
+        sBar.style.width = '100%';
+        sBar.style.background = '#059669';
+        sLabel.textContent = 'Excellent';
+        sLabel.style.color = '#059669';
+      }
+
+      const btnReg = document.getElementById('btn-register');
+      const allValid = hasLength && hasLetter && hasNumber;
+      btnReg.disabled = !allValid;
+      btnReg.style.opacity = allValid ? '1' : '0.6';
+      btnReg.style.cursor = allValid ? 'pointer' : 'not-allowed';
+    }
+
+    function togglePass(inputId, btn) {
+      const inp = document.getElementById(inputId);
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        inp.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    function openCredsModal() {
+      document.getElementById('creds-modal').style.display = 'flex';
+    }
+
+    function closeCredsModal() {
+      document.getElementById('creds-modal').style.display = 'none';
+    }
+
+    function fillAndClose(email) {
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = 'password123';
+      closeCredsModal();
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-register');
+      const err = document.getElementById('register-error');
+      const payload = {
+        name: document.getElementById('reg-name').value.trim(),
+        email: document.getElementById('reg-email').value.trim(),
+        role: document.getElementById('reg-role').value,
+        password: document.getElementById('reg-password').value
+      };
+      btn.textContent = 'Creating…'; btn.disabled = true;
+      err.style.display = 'none';
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const rawText = await res.text();
+        let data = { success: false, message: 'Registration failed.' };
+        if (rawText) {
+          try { data = JSON.parse(rawText); } catch { data = { success: false, message: rawText }; }
+        }
+        if (!data.success) throw new Error(data.message || 'Registration failed.');
+        localStorage.setItem('transitops_token', data.data.token);
+        localStorage.setItem('transitops_user', JSON.stringify(data.data.user));
+        redirectUserRole(data.data.user);
+      } catch (e) {
+        err.textContent = e.message; err.style.display = 'block';
+        btn.textContent = 'CREATE ACCOUNT →'; btn.disabled = false;
+      }
+    }
+  </script>
+  <script src="/js/water-ripple.js"></script>
+</body>
+
+</html>

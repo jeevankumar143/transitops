@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TransitOps — Driver Operations Portal | Ministry of Transport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .portal-container {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 24px;
+    }
+    .driver-banner {
+      background: linear-gradient(135deg, #1a3a6b 0%, #0f2547 100%);
+      color: #fff;
+      border-radius: 8px;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-top: 4px solid #c8972a;
+    }
+    .driver-banner h2 { font-family: 'Inter', sans-serif; font-size: 24px; margin-bottom: 4px; }
+    .driver-banner p { color: rgba(255,255,255,0.8); font-size: 14px; }
+    .driver-stats { display: flex; gap: 20px; }
+    .driver-stat-box {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      padding: 12px 20px;
+      text-align: center;
+    }
+    .driver-stat-box .val { font-size: 22px; font-weight: 800; color: #e8b84b; font-family: 'Inter', sans-serif; }
+    .driver-stat-box .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Official Top Bar -->
+  <div style="background:#0f2547;color:rgba(255,255,255,0.7);font-size:11px;padding:6px 24px;display:flex;justify-content:space-between;">
+    <div>🏛️ <strong>Official Government System</strong> — Ministry of Transport | Driver Operations Directorate</div>
+    <div>Role: <strong>DRIVER PORTAL</strong></div>
+  </div>
+  <div class="flag-stripe" style="height:3px;background:linear-gradient(to right,#1a5f1a 33%,#c8972a 33%,#c8972a 66%,#a31d1d 66%)"></div>
+
+  <!-- Header -->
+  <header class="navbar" style="background:#fff;border-bottom:2px solid #d0d9e3;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:40px;height:40px;border-radius:6px;background:#1a3a6b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;">🚛</div>
+      <div>
+        <div style="font-weight:800;font-size:18px;color:#1a3a6b;font-family:'Inter',sans-serif;">TRANSITOPS</div>
+        <div style="font-size:11px;color:#c8972a;font-weight:700;text-transform:uppercase;">Driver Operations Portal</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span id="user-display" style="font-size:14px;font-weight:600;color:#1a2535;">Officer Driver</span>
+      <button onclick="logoutDriver()" class="btn btn-secondary btn-sm">Sign Out ⏻</button>
+    </div>
+  </header>
+
+  <div class="portal-container">
+    <!-- Driver Welcome Banner -->
+    <div class="driver-banner">
+      <div>
+        <h2 id="driver-welcome-name">Welcome, Driver</h2>
+        <p>Monitor active delivery dispatches, record actual trip distances, and log fuel refuels.</p>
+      </div>
+      <div class="driver-stats">
+        <div class="driver-stat-box">
+          <div class="val" id="stat-trips-count">0</div>
+          <div class="lbl">Assigned Trips</div>
+        </div>
+        <div class="driver-stat-box">
+          <div class="val" id="stat-active-count">0</div>
+          <div class="lbl">Active On-Road</div>
+        </div>
+        <div class="driver-stat-box">
+          <div class="val">100</div>
+          <div class="lbl">Safety Score</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Row -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3 style="font-size:18px;font-weight:700;color:#1a3a6b;font-family:'Inter',sans-serif;">📋 Delivery &amp; Trip Log</h3>
+      <div style="display:flex;gap:12px;">
+        <button class="btn btn-primary" onclick="openTripModalDriver()">+ Create Trip / Delivery</button>
+        <button class="btn btn-secondary" onclick="openFuelModalDriver()">⛽ Log Roadside Fuel</button>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card" style="background:#fff;border:1px solid #d0d9e3;border-radius:6px;padding:20px;">
+      <div id="trips-container">Loading trips…</div>
+    </div>
+  </div>
+
+  <!-- Complete Trip Modal -->
+  <div class="modal-overlay" id="complete-modal">
+    <div class="modal" style="max-width:380px">
+      <div class="modal-header">
+        <div class="modal-title">Complete Trip &amp; Delivery</div>
+        <button class="modal-close" onclick="closeDriverModal('complete-modal')">✕</button>
+      </div>
+      <p style="color:#3d5166;font-size:13px;margin-bottom:16px">Enter the actual distance travelled (km) to complete delivery.</p>
+      <input type="hidden" id="complete-trip-id" />
+      <div class="form-group">
+        <label>Actual Distance (km)</label>
+        <input type="number" id="complete-distance" min="0" step="1" placeholder="485" required />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeDriverModal('complete-modal')">Cancel</button>
+        <button class="btn btn-success" onclick="submitCompleteDriver()">✓ Mark Completed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Trip Modal -->
+  <div class="modal-overlay" id="trip-modal">
+    <div class="modal" style="max-width:540px">
+      <div class="modal-header">
+        <div class="modal-title">Create Trip / Delivery</div>
+        <button class="modal-close" onclick="closeDriverModal('trip-modal')">✕</button>
+      </div>
+      <form onsubmit="tripSubmitDriver(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Source *</label>
+            <input type="text" id="t-source" placeholder="Nairobi" required />
+          </div>
+          <div class="form-group">
+            <label>Destination *</label>
+            <input type="text" id="t-dest" placeholder="Mombasa" required />
+          </div>
+          <div class="form-group col-2">
+            <label>Vehicle *</label>
+            <select id="t-vehicle" required></select>
+          </div>
+          <div class="form-group col-2">
+            <label>Driver *</label>
+            <select id="t-driver" required></select>
+          </div>
+          <div class="form-group">
+            <label>Cargo Weight (kg)</label>
+            <input type="number" id="t-cargo" min="0" step="50" placeholder="5000" />
+          </div>
+          <div class="form-group">
+            <label>Planned Distance (km)</label>
+            <input type="number" id="t-distance" min="0" step="1" placeholder="480" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeDriverModal('trip-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Delivery</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fuel Modal -->
+  <div class="modal-overlay" id="fuel-modal">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <div class="modal-title">Log Fuel Refill</div>
+        <button class="modal-close" onclick="closeDriverModal('fuel-modal')">✕</button>
+      </div>
+      <form onsubmit="fuelSubmitDriver(event)">
+        <div class="form-grid">
+          <div class="form-group col-2">
+            <label>Vehicle *</label>
+            <select id="f-vehicle" required></select>
+          </div>
+          <div class="form-group">
+            <label>Liters *</label>
+            <input type="number" id="f-liters" min="0.1" step="0.1" required />
+          </div>
+          <div class="form-group">
+            <label>Cost (KES) *</label>
+            <input type="number" id="f-cost" min="1" step="1" required />
+          </div>
+          <div class="form-group col-2">
+            <label>Fuel Station</label>
+            <input type="text" id="f-station" placeholder="Total Energies..." />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeDriverModal('fuel-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Log Refill</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script>
+    function getToken() { return localStorage.getItem('transitops_token'); }
+    function getUser()  { try { return JSON.parse(localStorage.getItem('transitops_user')); } catch (e) { return null; } }
+    function logoutDriver() { localStorage.clear(); window.location.href = '/login.html'; }
+    function openDriverModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeDriverModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function toast(msg, type='info') {
+      const el = document.createElement('div');
+      el.className = 'toast toast-' + type;
+      el.textContent = msg;
+      document.getElementById('toast-container').appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    async function apiFetch(url, opts = {}) {
+      const token = getToken();
+      opts.headers = { 'Content-Type': 'application/json', ...(opts.headers || {}), Authorization: `Bearer ${token}` };
+      const res = await fetch(url, opts);
+      return res.json();
+    }
+
+    async function loadDriverPortal() {
+      const user = getUser();
+      if (!user) { window.location.href = '/login.html'; return; }
+      document.getElementById('user-display').textContent = user.name + ' (Driver)';
+      document.getElementById('driver-welcome-name').textContent = 'Welcome, ' + user.name;
+
+      const res = await apiFetch('/api/trips');
+      if (!res.success) return;
+      const trips = res.data;
+
+      document.getElementById('stat-trips-count').textContent = trips.length;
+      document.getElementById('stat-active-count').textContent = trips.filter(t => t.status === 'Dispatched').length;
+
+      const html = `
+        <table class="table" style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:2px solid #d0d9e3;text-align:left;">
+              <th style="padding:12px;">#</th>
+              <th style="padding:12px;">Route</th>
+              <th style="padding:12px;">Vehicle</th>
+              <th style="padding:12px;">Driver</th>
+              <th style="padding:12px;">Cargo</th>
+              <th style="padding:12px;">Status</th>
+              <th style="padding:12px;text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${trips.map(t => `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:12px;"><strong>#${t.id}</strong></td>
+                <td style="padding:12px;">${t.source} → ${t.destination}</td>
+                <td style="padding:12px;">${t.registration_no}</td>
+                <td style="padding:12px;">${t.driver_name}</td>
+                <td style="padding:12px;">${t.cargo_weight} kg</td>
+                <td style="padding:12px;"><span class="badge badge-${t.status.toLowerCase()}">${t.status}</span></td>
+                <td style="padding:12px;text-align:right;">
+                  ${t.status === 'Draft' ? `<button class="btn btn-primary btn-sm" onclick="dispatchTripDriver(${t.id})">🚀 Dispatch</button>` : ''}
+                  ${t.status === 'Dispatched' ? `<button class="btn btn-success btn-sm" onclick="openCompleteDriver(${t.id})">✓ Complete</button>` : ''}
+                  ${t.status === 'Completed' ? `<span style="color:#1a5f1a;font-weight:600;">Completed</span>` : ''}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('trips-container').innerHTML = html;
+    }
+
+    async function dispatchTripDriver(id) {
+      const res = await apiFetch(`/api/trips/${id}/dispatch`, { method: 'POST' });
+      if (res.success) { toast('Trip Dispatched!', 'success'); loadDriverPortal(); }
+      else toast(res.message, 'error');
+    }
+
+    function openCompleteDriver(id) {
+      document.getElementById('complete-trip-id').value = id;
+      document.getElementById('complete-distance').value = '';
+      openDriverModal('complete-modal');
+    }
+
+    async function submitCompleteDriver() {
+      const id = document.getElementById('complete-trip-id').value;
+      const dist = document.getElementById('complete-distance').value;
+      const res = await apiFetch(`/api/trips/${id}/complete`, {
+        method: 'POST', body: JSON.stringify({ actual_distance: dist })
+      });
+      if (res.success) {
+        toast('Trip Completed!', 'success');
+        closeDriverModal('complete-modal');
+        loadDriverPortal();
+      } else toast(res.message, 'error');
+    }
+
+    async function openTripModalDriver() {
+      const [vRes, dRes] = await Promise.all([apiFetch('/api/vehicles/available'), apiFetch('/api/drivers/available')]);
+      const vSel = document.getElementById('t-vehicle');
+      const dSel = document.getElementById('t-driver');
+      vSel.innerHTML = (vRes.data||[]).map(v => `<option value="${v.id}">${v.registration_no} (${v.name})</option>`).join('');
+      dSel.innerHTML = (dRes.data||[]).map(d => `<option value="${d.id}">${d.name} (${d.license_no})</option>`).join('');
+      openDriverModal('trip-modal');
+    }
+
+    async function tripSubmitDriver(e) {
+      e.preventDefault();
+      const body = {
+        source: document.getElementById('t-source').value,
+        destination: document.getElementById('t-dest').value,
+        vehicle_id: document.getElementById('t-vehicle').value,
+        driver_id: document.getElementById('t-driver').value,
+        cargo_weight: document.getElementById('t-cargo').value || 0,
+        planned_distance: document.getElementById('t-distance').value || 0,
+        revenue: 0
+      };
+      const res = await apiFetch('/api/trips', { method: 'POST', body: JSON.stringify(body) });
+      if (res.success) {
+        toast('Trip Created!', 'success');
+        closeDriverModal('trip-modal');
+        loadDriverPortal();
+      } else toast(res.message, 'error');
+    }
+
+    async function openFuelModalDriver() {
+      const vRes = await apiFetch('/api/vehicles');
+      document.getElementById('f-vehicle').innerHTML = (vRes.data||[]).map(v => `<option value="${v.id}">${v.registration_no}</option>`).join('');
+      openDriverModal('fuel-modal');
+    }
+
+    async function fuelSubmitDriver(e) {
+      e.preventDefault();
+      const body = {
+        vehicle_id: document.getElementById('f-vehicle').value,
+        liters: document.getElementById('f-liters').value,
+        total_cost: document.getElementById('f-cost').value,
+        station: document.getElementById('f-station').value
+      };
+      const res = await apiFetch('/api/fuel', { method: 'POST', body: JSON.stringify(body) });
+      if (res.success) {
+        toast('Fuel log recorded!', 'success');
+        closeDriverModal('fuel-modal');
+      } else toast(res.message, 'error');
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDriverPortal);
+  </script>
+  <script src="/js/water-ripple.js"></script>
+</body>
+</html>

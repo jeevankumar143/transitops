@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TransitOps — Financial &amp; Audit Directorate Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .portal-container { max-width: 1200px; margin: 24px auto; padding: 0 24px; }
+    .finance-banner {
+      background: linear-gradient(135deg, #6f4f00 0%, #3e2b00 100%);
+      color: #fff;
+      border-radius: 8px;
+      padding: 24px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      border-top: 4px solid #c8972a;
+    }
+    .finance-banner h2 { font-family: 'Inter', sans-serif; font-size: 24px; margin-bottom: 4px; }
+    .finance-banner p { color: rgba(255,255,255,0.85); font-size: 14px; }
+    .finance-stats { display: flex; gap: 20px; }
+    .finance-stat-box {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 6px;
+      padding: 12px 20px;
+      text-align: center;
+    }
+    .finance-stat-box .val { font-size: 22px; font-weight: 800; color: #ffe082; font-family: 'Inter', sans-serif; }
+    .finance-stat-box .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Official Top Bar -->
+  <div style="background:#0f2547;color:rgba(255,255,255,0.7);font-size:11px;padding:6px 24px;display:flex;justify-content:space-between;">
+    <div>🏛️ <strong>Official Government System</strong> — Ministry of Transport | Financial Economics &amp; Audit Directorate</div>
+    <div>Role: <strong>FINANCIAL ANALYST PORTAL</strong></div>
+  </div>
+  <div class="flag-stripe" style="height:3px;background:linear-gradient(to right,#1a5f1a 33%,#c8972a 33%,#c8972a 66%,#a31d1d 66%)"></div>
+
+  <!-- Header -->
+  <header class="navbar" style="background:#fff;border-bottom:2px solid #d0d9e3;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="width:40px;height:40px;border-radius:6px;background:#6f4f00;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;">📈</div>
+      <div>
+        <div style="font-weight:800;font-size:18px;color:#6f4f00;font-family:'Inter',sans-serif;">TRANSITOPS</div>
+        <div style="font-size:11px;color:#c8972a;font-weight:700;text-transform:uppercase;">Financial &amp; Economics Portal</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span id="user-display" style="font-size:14px;font-weight:600;color:#1a2535;">Officer Analyst</span>
+      <button onclick="logoutFinance()" class="btn btn-secondary btn-sm">Sign Out ⏻</button>
+    </div>
+  </header>
+
+  <div class="portal-container">
+    <!-- Finance Welcome Banner -->
+    <div class="finance-banner">
+      <div>
+        <h2 id="finance-welcome-name">Financial Audit Directorate</h2>
+        <p>Review national fleet profitability, operational fuel/maintenance costs, and asset ROI performance.</p>
+      </div>
+      <div class="finance-stats">
+        <div class="finance-stat-box">
+          <div class="val" id="stat-revenue">KES 0</div>
+          <div class="lbl">Total Revenue</div>
+        </div>
+        <div class="finance-stat-box">
+          <div class="val" id="stat-costs">KES 0</div>
+          <div class="lbl">Total Op. Costs</div>
+        </div>
+        <div class="finance-stat-box">
+          <div class="val" id="stat-net-profit">KES 0</div>
+          <div class="lbl">Net Fleet Balance</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div style="display:flex;gap:12px;margin-bottom:24px;">
+      <button class="btn btn-primary" id="tab-btn-reports" style="background:#6f4f00;border-color:#6f4f00;" onclick="switchFinanceTab('reports')">📊 Reports &amp; Analytics (ROI)</button>
+      <button class="btn btn-secondary" id="tab-btn-expenses" onclick="switchFinanceTab('expenses')">💳 Fuel &amp; Expense Management</button>
+    </div>
+
+    <!-- TAB 1: REPORTS & ANALYTICS -->
+    <div id="section-reports">
+      <!-- Actions Row -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <h3 style="font-size:18px;font-weight:700;color:#6f4f00;font-family:'Inter',sans-serif;">📊 Asset Return On Investment (ROI) Ledger</h3>
+          <p style="font-size:12px;color:#3d5166;">Formula: (Revenue - (Maintenance + Fuel)) / Acquisition Cost</p>
+        </div>
+        <button class="btn btn-primary" style="background:#6f4f00;border-color:#6f4f00;" onclick="exportFinancialCSV()">📥 Export Audit CSV</button>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card" style="background:#fff;border:1px solid #d0d9e3;border-radius:6px;padding:20px;">
+        <div id="finance-container">Loading financial ledger…</div>
+      </div>
+    </div>
+
+    <!-- TAB 2: FUEL & EXPENSE MANAGEMENT -->
+    <div id="section-expenses" style="display:none;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+        <!-- Log Fuel Box -->
+        <div class="card" style="background:#fff;border:1px solid #d0d9e3;border-radius:6px;padding:20px;">
+          <h3 style="font-size:16px;font-weight:700;color:#6f4f00;margin-bottom:12px;">⛽ Record Fuel Log</h3>
+          <form onsubmit="submitFinanceFuel(event)">
+            <div style="margin-bottom:12px;">
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Vehicle *</label>
+              <select id="fin-f-vehicle" required style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;"></select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Liters *</label>
+                <input type="number" step="0.1" id="fin-f-liters" required style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;" placeholder="e.g. 120" />
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Cost (KES) *</label>
+                <input type="number" step="1" id="fin-f-cost" required style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;" placeholder="e.g. 21600" />
+              </div>
+            </div>
+            <div style="margin-bottom:12px;">
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Log Date *</label>
+              <input type="date" id="fin-f-date" required style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;" />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;background:#6f4f00;border-color:#6f4f00;">+ Save Fuel Log</button>
+          </form>
+        </div>
+
+        <!-- Log Expense Box -->
+        <div class="card" style="background:#fff;border:1px solid #d0d9e3;border-radius:6px;padding:20px;">
+          <h3 style="font-size:16px;font-weight:700;color:#6f4f00;margin-bottom:12px;">💳 Record Operating Expense (Tolls, etc.)</h3>
+          <form onsubmit="submitFinanceExpense(event)">
+            <div style="margin-bottom:12px;">
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Vehicle</label>
+              <select id="fin-e-vehicle" style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;"></select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Category *</label>
+                <select id="fin-e-category" required style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;">
+                  <option value="Toll">Highway Toll</option>
+                  <option value="Insurance">Insurance</option>
+                  <option value="Maintenance">Maintenance / Parts</option>
+                  <option value="Other">Other Operational</option>
+                </select>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Amount (KES) *</label>
+                <input type="number" step="1" id="fin-e-amount" required style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;" placeholder="e.g. 1500" />
+              </div>
+            </div>
+            <div style="margin-bottom:12px;">
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Description</label>
+              <input type="text" id="fin-e-desc" style="width:100%;padding:8px;border:1px solid #d0d9e3;border-radius:4px;" placeholder="Expressway toll payment" />
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;background:#6f4f00;border-color:#6f4f00;">+ Save Expense</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script>
+    function getToken() { return localStorage.getItem('transitops_token'); }
+    function getUser()  { try { return JSON.parse(localStorage.getItem('transitops_user')); } catch (e) { return null; } }
+    function logoutFinance() { localStorage.clear(); window.location.href = '/login.html'; }
+
+    function fmt(n) {
+      if (n === null || n === undefined) return '0';
+      return Number(n).toLocaleString('en-KE', { maximumFractionDigits: 0 });
+    }
+
+    function toast(msg, type='info') {
+      const el = document.createElement('div');
+      el.className = 'toast toast-' + type;
+      el.textContent = msg;
+      document.getElementById('toast-container').appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    async function apiFetch(url, opts = {}) {
+      const token = getToken();
+      opts.headers = { 'Content-Type': 'application/json', ...(opts.headers || {}), Authorization: `Bearer ${token}` };
+      const res = await fetch(url, opts);
+      return res.json();
+    }
+
+    let globalFinancialData = [];
+
+    async function loadFinancePortal() {
+      const user = getUser();
+      if (!user) { window.location.href = '/login.html'; return; }
+      document.getElementById('user-display').textContent = user.name + ' (Financial Analyst)';
+      document.getElementById('finance-welcome-name').textContent = 'Financial Economics — ' + user.name;
+
+      const res = await apiFetch('/api/dashboard/financials');
+      if (!res.success) return;
+      const list = res.data || [];
+      globalFinancialData = list;
+
+      const totalRevenue = list.reduce((sum, v) => sum + Number(v.total_revenue || 0), 0);
+      const totalCosts   = list.reduce((sum, v) => sum + Number(v.total_op_cost || 0), 0);
+      const netProfit    = totalRevenue - totalCosts;
+
+      document.getElementById('stat-revenue').textContent = 'KES ' + fmt(totalRevenue);
+      document.getElementById('stat-costs').textContent   = 'KES ' + fmt(totalCosts);
+      document.getElementById('stat-net-profit').textContent = 'KES ' + fmt(netProfit);
+
+      const html = `
+        <table class="table" style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:2px solid #d0d9e3;text-align:left;">
+              <th style="padding:12px;">Registration / Asset</th>
+              <th style="padding:12px;text-align:right;">Acquisition Cost</th>
+              <th style="padding:12px;text-align:right;">Gross Revenue</th>
+              <th style="padding:12px;text-align:right;">Fuel Cost</th>
+              <th style="padding:12px;text-align:right;">Maintenance Cost</th>
+              <th style="padding:12px;text-align:right;">Total Op. Cost</th>
+              <th style="padding:12px;text-align:right;">Vehicle ROI (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map(v => {
+              const roiVal = v.roi_percent !== null ? Number(v.roi_percent) : 0;
+              const roiColor = roiVal > 0 ? '#1b5e20' : roiVal < 0 ? '#a31d1d' : '#3d5166';
+              return `
+              <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:12px;"><strong>${v.registration_no}</strong><br><span style="font-size:11px;color:#6b7d91">${v.name}</span></td>
+                <td style="padding:12px;text-align:right;">KES ${fmt(v.acquisition_cost)}</td>
+                <td style="padding:12px;text-align:right;color:#1b5e20;font-weight:700;">KES ${fmt(v.total_revenue)}</td>
+                <td style="padding:12px;text-align:right;">KES ${fmt(v.total_fuel_cost)}</td>
+                <td style="padding:12px;text-align:right;">KES ${fmt(v.total_maintenance_cost)}</td>
+                <td style="padding:12px;text-align:right;font-weight:600;">KES ${fmt(v.total_op_cost)}</td>
+                <td style="padding:12px;text-align:right;font-weight:800;color:${roiColor};">${v.roi_percent !== null ? v.roi_percent + ' %' : 'N/A'}</td>
+              </tr>
+            `}).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('finance-container').innerHTML = html;
+    }
+
+    function exportFinancialCSV() {
+      if (!globalFinancialData.length) { toast('No financial data to export.', 'error'); return; }
+      const headers = ['Registration', 'Vehicle Name', 'Acquisition Cost', 'Revenue', 'Fuel Cost', 'Maintenance Cost', 'Total Operational Cost', 'ROI %'];
+      const rows = globalFinancialData.map(v => [
+        v.registration_no, v.name, v.acquisition_cost, v.total_revenue, v.total_fuel_cost, v.total_maintenance_cost, v.total_op_cost, v.roi_percent ?? ''
+      ]);
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'TransitOps_Financial_Audit_' + new Date().toISOString().slice(0,10) + '.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast('Financial Audit CSV downloaded.', 'success');
+    }
+
+    function switchFinanceTab(tab) {
+      const isReports = tab === 'reports';
+      document.getElementById('section-reports').style.display  = isReports ? 'block' : 'none';
+      document.getElementById('section-expenses').style.display = isReports ? 'none' : 'block';
+      document.getElementById('tab-btn-reports').className  = isReports ? 'btn btn-primary' : 'btn btn-secondary';
+      document.getElementById('tab-btn-expenses').className = isReports ? 'btn btn-secondary' : 'btn btn-primary';
+      if (!isReports) loadFinanceVehicles();
+    }
+
+    async function loadFinanceVehicles() {
+      const res = await apiFetch('/api/vehicles');
+      const list = res.data || [];
+      const opts = list.map(v => `<option value="${v.id}">${v.registration_no} (${v.name})</option>`).join('');
+      document.getElementById('fin-f-vehicle').innerHTML = opts;
+      document.getElementById('fin-e-vehicle').innerHTML = `<option value="">No specific vehicle</option>` + opts;
+      document.getElementById('fin-f-date').value = new Date().toISOString().slice(0, 10);
+    }
+
+    async function submitFinanceFuel(e) {
+      e.preventDefault();
+      const body = {
+        vehicle_id: document.getElementById('fin-f-vehicle').value,
+        liters:     document.getElementById('fin-f-liters').value,
+        cost:       document.getElementById('fin-f-cost').value,
+        log_date:   document.getElementById('fin-f-date').value
+      };
+      const res = await apiFetch('/api/fuel', { method: 'POST', body: JSON.stringify(body) });
+      if (res.success) {
+        toast('Fuel log recorded!', 'success');
+        e.target.reset();
+        loadFinancePortal();
+      } else toast(res.message || 'Error saving fuel log.', 'error');
+    }
+
+    async function submitFinanceExpense(e) {
+      e.preventDefault();
+      const body = {
+        vehicle_id:   document.getElementById('fin-e-vehicle').value || null,
+        category:     document.getElementById('fin-e-category').value,
+        amount:       document.getElementById('fin-e-amount').value,
+        description:  document.getElementById('fin-e-desc').value,
+        expense_date: new Date().toISOString().slice(0, 10)
+      };
+      const res = await apiFetch('/api/expenses', { method: 'POST', body: JSON.stringify(body) });
+      if (res.success) {
+        toast('Operating expense recorded!', 'success');
+        e.target.reset();
+        loadFinancePortal();
+      } else toast(res.message || 'Error saving expense.', 'error');
+    }
+
+    document.addEventListener('DOMContentLoaded', loadFinancePortal);
+  </script>
+  <script src="/js/water-ripple.js"></script>
+</body>
+</html>
